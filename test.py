@@ -1,22 +1,26 @@
-import time
-from threading import Thread, Lock
-from charon import Submitter
+import charon
+from charon import Charon
 
-def output(submission_id, verdict):
-    print(submission_id, verdict)
+def output(submission_id, result):
+    print(submission_id, result)
 
-s = Submitter(output, Lock())
+c = Charon(output)
 
 url = 'http://codeforces.com/contest/504/submit'
 problem = 'E'
 language = 'GNU G++11 5.1.0'
-submission = open('504E.cpp').readlines()
+submission = open('test/504E.cpp').readlines()
 
-Thread(target=s.make_submission, args=(url, problem, language, submission)).start()
+c.submit(url, problem, language, submission)
 
 url = 'http://codeforces.com/contest/202/submit'
 problem = 'A'
 language = 'Python 3.5.1'
-submission = open('202A.py').readlines()
+submission = open('test/202A.py').readlines()
 
-Thread(target=s.make_submission, args=(url, problem, language, submission)).start()
+c.submit(url, problem, language, submission)
+
+for t in charon.threads:
+    t.join()
+
+c.driver.quit()
