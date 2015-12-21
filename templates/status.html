@@ -1,0 +1,21 @@
+<!doctype html>
+<title>Status</title>
+<h1>Status</h1>
+<table>
+  <tr>
+    <th> Submission ID </th>
+    <th> Problem </th>
+    <th> Verdict </th>
+    <th> Time </th>
+    <th> Memory </th>
+  </tr>
+  {% for submission in submissions %}
+    <tr>
+      <td> {{ submission.id }} </td>
+      <td> {{ submission.problem.title }} </td>
+      <td> {{ submission.verdict }} </td>
+      <td> {{ submission.time }} </td>
+      <td> {{ submission.memory }} </td>
+    </tr>
+  {% endfor %}
+</table>

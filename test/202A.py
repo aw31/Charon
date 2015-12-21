@@ -1,2 +1,3 @@
-z=input();j=max(z)
-print(j*z.count(j))
+z=input()
+i=max(z)
+print(z.count(i)*i)

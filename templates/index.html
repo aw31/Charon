@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Problems</title>
+<h1>Problems</h1>
+<table>
+    {% for problem in problems %}
+      <tr>
+        <td>
+          <a href="problem/{{ problem.id }}">{{ problem.title }}</a>
+        </td>
+      </tr>
+    {% endfor %}
+</table>

@@ -15,6 +15,9 @@ LANGUAGE_MAP = {
 }
 LIMIT = 60
 
+def get_password():
+    return open('password.txt').read()[:-1]
+
 def synchronized(f):
     def inner(*args, **kwargs):
         args[0].lock.acquire()
@@ -24,47 +27,42 @@ def synchronized(f):
             args[0].lock.release()
     return inner
 
-threads = []
-
-def run_asynchronized(f):
+def run_asynchronously(f):
     def inner(*args, **kwargs):
         t = Thread(target=f, args=args, kwargs=kwargs)
-        threads.append(t)
         t.start()
-        return t
     return inner
 
-def get_password():
-    return open('password.txt').read()[:-1]
-
 class Charon:
-    def __init__(self, callback):
+    def __init__(self):
+        self.lock = Lock()
+        self.lock.acquire()
         self.driver = webdriver.PhantomJS()
         # self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(10)
-        self.callback = callback
-        self.lock = Lock()
         self._login()
 
-    @synchronized
+    @run_asynchronously
     def _login(self):
         self.driver.get(LOGIN_URL)
         handle = self.driver.find_element_by_id('handle')
         handle.send_keys(USERNAME)
         password = self.driver.find_element_by_id('password')
         password.send_keys(get_password())
+        self.driver.find_element_by_id('remember').click()
         self.driver.find_element_by_class_name('submit').submit()
         self.driver.find_element_by_id('sidebar')
+        self.lock.release()
 
     @synchronized
-    def _submit(self, url, problem, language, submission):
+    def _submit(self, url, index, language, code):
         self.driver.get(url)
-        problems = Select(self.driver.find_element_by_name('submittedProblemIndex'))
-        problems.select_by_value(problem)
+        indices = Select(self.driver.find_element_by_name('submittedProblemIndex'))
+        indices.select_by_value(index)
         languages = Select(self.driver.find_element_by_name('programTypeId'))
         languages.select_by_value(LANGUAGE_MAP[language])
         text_area = self.driver.find_element_by_id('sourceCodeTextarea')
-        text_area.send_keys(submission)
+        text_area.send_keys(code)
         self.driver.find_element_by_class_name('submit').submit()
         # TODO: handle 'You have submitted exactly the same code before'
         time.sleep(1) # wait for Codeforces
@@ -86,13 +84,13 @@ class Charon:
         else:
             return ('WAITING', None, None)
 
-    @run_asynchronized
-    def submit(self, url, problem, language, submission):
-        submission_id = self._submit(url, problem, language, submission)
+    @run_asynchronously
+    def submit(self, url, index, language, code, callback):
+        submission_id = self._submit(url, index, language, code)
         for i in range(LIMIT):
             result = self._status(submission_id)
             if result[0] != 'WAITING':
-                self.callback(submission_id, result)
+                callback(submission_id, result)
                 return
             time.sleep(5)
-        self.callback(submission_id, ('UNKNOWN', None, None))
+        callback(submission_id, ('UNKNOWN', None, None))
