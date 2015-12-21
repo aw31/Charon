@@ -1,1 +1,2 @@
-w=input();a=max(w);print(w.count(a)*a)
+y=input();a=max(y)
+print(y.count(a)*a)
