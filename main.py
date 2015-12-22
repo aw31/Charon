@@ -42,20 +42,17 @@ class Submission(db.Model):
         self.verdict = 'JUDGING'
         self.problem = problem
 
-def update(submission_id, cf_id, result):
-    """Updates submission with judge results."""
-    submission = Submission.query.get(submission_id)
-    submission.cf_id = cf_id
-    submission.verdict = result[0]
-    submission.runtime = result[1]
-    submission.memory = result[2]
-    db.session.commit()
-
 def curry_update(submission_id):
     """Curries update with submission ID."""
-    def curried(cf_id, result):
-        return update(submission_id, cf_id, result)
-    return curried
+    def update(cf_id, result):
+        """Updates submission with judge results."""
+        submission = Submission.query.get(submission_id)
+        submission.cf_id = cf_id
+        submission.verdict = result[0]
+        submission.runtime = result[1]
+        submission.memory = result[2]
+        db.session.commit()
+    return update
 
 @app.route('/')
 def index():
@@ -91,21 +88,19 @@ def add():
 
 @app.route('/problem/<int:problem_id>/submit', methods=['GET', 'POST'])
 def submit(problem_id):
-    """Handler for submitting to given problem."""
-    global charon
+    """Handler for submitting to a given problem."""
+    problem = Problem.query.get(problem_id)
     if request.method == 'GET':
-        problem = Problem.query.get(problem_id)
         return render_template('submit.html', problem=problem)
     else:
         language = request.form['language']
         code = request.form['code']
-        problem = Problem.query.get(problem_id)
         submission = Submission(language, code, problem)
         db.session.add(submission)
         db.session.commit()
         callback = curry_update(submission.id)
-        submission = (problem.url, problem.index, language, code)
-        charon.submit(submission, callback)
+        cf_submission = (problem.url, problem.index, language, code)
+        charon.submit(cf_submission, callback)
         return redirect('/status')
 
 if __name__ == "__main__":

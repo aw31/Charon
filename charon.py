@@ -4,21 +4,15 @@ from threading import Thread, Lock
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
-USERNAME = 'Charon'
-LOGIN_URL = 'http://codeforces.com/enter'
-SUBMISSIONS_URL = 'http://codeforces.com/submissions/' + USERNAME
-
-LANGUAGE_MAP = {
-    'Python 3.5.1' : '31',
-    'GNU G++11 5.1.0' : '42',
-    'Java 1.8.0_66' : '36'
-}
-
-REFRESH_LIMIT = 60
-
 def get_password():
     """Returns password."""
     return open('password.txt').read()[:-1]
+
+HANDLE = 'Charon'
+PASSWORD = get_password()
+LOGIN_URL = 'http://codeforces.com/enter'
+SUBMISSIONS_URL = 'http://codeforces.com/submissions/' + HANDLE
+REFRESH_LIMIT = 60
 
 def synchronized(f):
     """Decorator for methods that cannot execute simultaneously."""
@@ -49,11 +43,13 @@ class Charon(object):
     def _login(self):
         self.driver.get(LOGIN_URL)
         handle = self.driver.find_element_by_id('handle')
-        handle.send_keys(USERNAME)
         password = self.driver.find_element_by_id('password')
-        password.send_keys(get_password())
-        self.driver.find_element_by_id('remember').click()
-        self.driver.find_element_by_class_name('submit').submit()
+        remember = self.driver.find_element_by_id('remember')
+        submit = self.driver.find_element_by_class_name('submit')
+        handle.send_keys(HANDLE)
+        password.send_keys(PASSWORD)
+        remember.click()
+        submit.submit()
         self.driver.find_element_by_id('sidebar')
         self.lock.release() # releases lock after log in
 
@@ -61,12 +57,13 @@ class Charon(object):
     def _submit(self, url, index, language, code):
         self.driver.get(url)
         indices = Select(self.driver.find_element_by_name('submittedProblemIndex'))
-        indices.select_by_value(index)
         languages = Select(self.driver.find_element_by_name('programTypeId'))
-        languages.select_by_value(LANGUAGE_MAP[language])
         text_area = self.driver.find_element_by_id('sourceCodeTextarea')
+        submit = self.driver.find_element_by_class_name('submit')
+        indices.select_by_value(index)
+        languages.select_by_visible_text(language)
         text_area.send_keys(code)
-        self.driver.find_element_by_class_name('submit').submit()
+        submit.submit()
         # TODO: handle 'You have submitted exactly the same code before'
         time.sleep(1) # wait for Codeforces
         self.driver.get(SUBMISSIONS_URL)
@@ -76,13 +73,14 @@ class Charon(object):
     @synchronized
     def _status(self, submission_id):
         self.driver.get(SUBMISSIONS_URL)
-        submission_url = self.driver.find_element_by_link_text(submission_id)
-        submission = submission_url.find_element_by_xpath('../..')
-        status = submission.find_element_by_xpath('./td[@submissionid="%s"]' % submission_id)
+        status_xpath = '//td[@submissionid="%s"]' % submission_id
+        status = self.driver.find_element_by_xpath(status_xpath)
         if status.get_attribute('waiting') == 'false':
-            verdict = status.find_element_by_xpath('./span').get_attribute('submissionverdict')
-            runtime = submission.find_element_by_class_name('time-consumed-cell').text
-            memory = submission.find_element_by_class_name('memory-consumed-cell').text
+            row_xpath = '//tr[@data-submission-id="%s"]' % submission_id
+            row = self.driver.find_element_by_xpath(row_xpath)
+            verdict = status.find_element_by_xpath('.//span').get_attribute('submissionverdict')
+            runtime = row.find_element_by_class_name('time-consumed-cell').text
+            memory = row.find_element_by_class_name('memory-consumed-cell').text
             return (verdict, runtime, memory)
         else:
             return ('JUDGING', None, None)
@@ -97,4 +95,4 @@ class Charon(object):
                 callback(submission_id, result)
                 return
             time.sleep(5)
-        callback(submission_id, ('UNKNOWN', None, None))
+        callback(submission_id, ('ERROR', None, None))
