@@ -1,6 +1,7 @@
 """Module for Flask-SQLAlchemy models."""
 import datetime
 from flask.ext.login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
 solves = db.Table(
@@ -12,19 +13,25 @@ solves = db.Table(
 class User(db.Model, UserMixin):
     """Model for online judge users."""
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(255), nullable=False, server_default='')
-    email = db.Column(db.String(255), nullable=False, unique=True)
-    first_name = db.Column(db.String(100), nullable=False, server_default='')
-    last_name = db.Column(db.String(100), nullable=False, server_default='')
+    username = db.Column(db.String, nullable=False, unique=True)
+    password_hash = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
     solves = db.relationship('Problem', secondary=solves, backref='users', lazy='dynamic')
 
     def __init__(self, username, password, email, first_name, last_name):
         self.username = username
-        self.password = password
+        self.set_password(password)
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Problem(db.Model):
     """Model for coding problems."""

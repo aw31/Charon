@@ -33,11 +33,10 @@ class LoginForm(Form):
         """Overrides validation to check password."""
         if not Form.validate(self):
             return False
-        user = User.query.filter_by(
-            username=self.username.data,
-            password=self.password.data
-        ).first()
-        if not user:
+        username = self.username.data
+        password = self.password.data
+        user = User.query.filter_by(username=username).first()
+        if not user or not user.check_password(password):
             return False
         self.user = user
         return True
@@ -45,17 +44,19 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     """Form for registration."""
     username = StringField('Username', [DataRequired(), Length(max=50)])
-    password = PasswordField('Password', [DataRequired(), Length(max=255)])
-    email = StringField('Email', [DataRequired(), Length(max=255)])
-    first_name = StringField('First Name', [DataRequired(), Length(max=100)])
-    last_name = StringField('Last Name', [DataRequired(), Length(max=100)])
+    password = PasswordField('Password', [DataRequired(), Length(max=50)])
+    email = StringField('Email', [DataRequired(), Length(max=50)])
+    first_name = StringField('First Name', [DataRequired(), Length(max=50)])
+    last_name = StringField('Last Name', [DataRequired(), Length(max=50)])
 
     def validate(self):
         """Overrides validation to check for uniqueness."""
         if not Form.validate(self):
             return False
-        if User.query.filter_by(username=self.username.data).count():
+        username = self.username.data
+        email = self.email.data
+        if User.query.filter_by(username=username).count():
             return False
-        if User.query.filter_by(email=self.email.data).count():
+        if User.query.filter_by(email=email).count():
             return False
         return True
