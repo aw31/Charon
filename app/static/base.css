@@ -1,0 +1,46 @@
+body {
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.header h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 30px;
+}
+
+.container {
+  max-width: 730px;
+}
+
+#content {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+#content h3 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+form {
+  padding-top: 15px;
+}
+
+#new-user {
+  border-left: 1px solid #e5e5e5;
+  margin-left: 5px;
+  padding-left: 8px;
+  padding-top: 8px;
+  padding-bottom: 10px;
+  display: inline-block;
+}

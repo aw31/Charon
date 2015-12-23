@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+      <link rel="stylesheet" href="/static/base.css">
+      <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div class="container">
+      <div id="header" class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            {% if current_user.is_authenticated %}
+              <li role="presentation"><a href="/add">Add</a></li>
+              <li role="presentation"><a href="/status">Status</a></li>
+              <li role="presentation"><a href="/">Problems</a></li>
+              <li role="presentation"><a href="/logout">Logout</a></li>
+            {% else %}
+              <li role="presentation"><a href="/">Problems</a></li>
+              <li role="presentation"><a href="/login">Login</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+        <h1 href="/">CharonJudge</h1>
+      </div>
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script>
+    var activeurl =  window.location.pathname;
+    $('a[href="'+activeurl+'"]').parent('li').addClass('active');
+  </script>
+</html>

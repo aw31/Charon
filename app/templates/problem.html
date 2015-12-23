@@ -1,5 +1,7 @@
-<!doctype html>
-<title>Problem {{ problem.id }} - {{ problem.title }}</title>
-<h1>Problem {{ problem.id }} - {{ problem.title }}</h1>
-<pre style="white-space: pre-wrap;">{{ problem.statement }}</pre>
-<a href="{{ problem.id}}/submit">Submit</a>
+{% extends "base.html" %}
+{% block title %}Problem {{ problem.id }} - {{ problem.title }}{% endblock %}
+{% block content %}
+  <h3>Problem {{ problem.id }} - {{ problem.title }}</h3>
+  <pre>{{ problem.statement }}</pre>
+  <a class="btn btn-default" href="{{ problem.id}}/submit">Submit</a>
+{% endblock %}

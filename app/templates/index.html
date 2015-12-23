@@ -1,15 +1,23 @@
-<!doctype html>
-<title>Problems</title>
-<h1>Problems</h1>
-<table>
-    {% for problem in problems %}
+{% extends "base.html" %}
+{% block title %}Problems{% endblock %}
+{% block content %}
+  <table class="table">
+    <thead>
       <tr>
-        <td>
-          <a href="problem/{{ problem.id }}">{{ problem.title }}</a>
-          {% if problem in solves %}
-            <span>[Solved]</span>
-          {% endif %}
-        </td>
+        <th>Problem</th>
       </tr>
-    {% endfor %}
-</table>
+    </thead>
+    <tbody>
+      {% for problem in problems %}
+        <tr>
+          <td>
+            <a href="problem/{{ problem.id }}">{{ problem.title }}</a>
+            {% if problem in solves %}
+              <span class="glyphicon glyphicon-ok pull-right" style="color:green"></span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

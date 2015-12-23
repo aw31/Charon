@@ -33,12 +33,14 @@ def index():
     return render_template('index.html', problems=problems, solves=solves)
 
 @views.route('/status')
+@login_required
 def status():
     """Submission status page handler."""
     submissions = Submission.query.all()
     return render_template('status.html', submissions=submissions)
 
 @views.route('/add', methods=['GET', 'POST'])
+@login_required
 def add():
     """Handler for adding new problems."""
     form = ProblemForm()
