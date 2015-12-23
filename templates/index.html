@@ -6,6 +6,9 @@
       <tr>
         <td>
           <a href="problem/{{ problem.id }}">{{ problem.title }}</a>
+          {% if problem in solves %}
+            <span>[Solved]</span>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

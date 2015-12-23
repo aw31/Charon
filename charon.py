@@ -3,15 +3,11 @@ import time
 from threading import Thread, Lock
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+from credentials import HANDLE, PASSWORD
 
-def get_password():
-    """Returns password."""
-    return open('password.txt').read()[:-1]
-
-HANDLE = 'Charon'
-PASSWORD = get_password()
 LOGIN_URL = 'http://codeforces.com/enter'
 SUBMISSIONS_URL = 'http://codeforces.com/submissions/' + HANDLE
+
 REFRESH_LIMIT = 60
 
 def synchronized(f):
@@ -35,7 +31,7 @@ class Charon(object):
     def __init__(self):
         self.lock = Lock() # manages access to Selenium
         self.lock.acquire() # acquires lock until logged in
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.PhantomJS()
         self.driver.implicitly_wait(10)
         self._login()
 

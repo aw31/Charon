@@ -3,13 +3,24 @@
 <h1>Add Problem</h1>
 
 <form method="post">
-  <label> Submission URL <input type="text" name="url"></label>
-  <br>
-  <label> Index <input type="text" name="index"></label>
-  <br>
-  <label> Title <input type="text" name="title"></label>
-  <br>
-  <textarea name="statement"></textarea>
-  <br>
+  {{ form.hidden_tag() }}
+  <table>
+    <tr>
+      <td> {{ form.url.label }} </td>
+      <td> {{ form.url(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.index.label }} </td>
+      <td> {{ form.index(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.title.label }} </td>
+      <td> {{ form.title(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.statement.label }} </td>
+      <td> {{ form.statement(rows=10, cols=50) }} </td>
+    </tr>
+  </table>
   <input type="submit" value="Submit">
 </form>

@@ -8,6 +8,7 @@
     <th> Verdict </th>
     <th> Time </th>
     <th> Memory </th>
+    <th> User </th>
   </tr>
   {% for submission in submissions %}
     <tr>
@@ -16,6 +17,7 @@
       <td> {{ submission.verdict }} </td>
       <td> {{ submission.runtime }} </td>
       <td> {{ submission.memory }} </td>
+      <td> {{ submission.user.username }} </td>
     </tr>
   {% endfor %}
 </table>

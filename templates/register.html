@@ -1,0 +1,30 @@
+<!doctype html>
+<title>Register</title>
+<h1>Register</h1>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+  <table>
+    <tr>
+      <td> {{ form.username.label }} </td>
+      <td> {{ form.username(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.password.label }} </td>
+      <td> {{ form.password(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.email.label }} </td>
+      <td> {{ form.email(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.first_name.label }} </td>
+      <td> {{ form.first_name(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.last_name.label }} </td>
+      <td> {{ form.last_name(size=20) }} </td>
+    </tr>
+  </table>
+  <input type="submit" value="Submit">
+</form>

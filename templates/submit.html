@@ -1,15 +1,18 @@
 <!doctype html>
 <title>Problem {{ problem.id }} - Submit</title>
-<h1>Problem {{ problem.id }} - Submit</h1>
+<h1>Problem {{ problem.id }} - {{ problem.title }} - Submit</h1>
 
 <form method="post">
-  <select name="language">
-    <option value="Python 3.5.1">Python 3.5.1</option>
-    <option value="GNU G++11 5.1.0">GNU G++11 5.1.0</option>
-    <option value="Java 1.8.0_66">Java 1.8.0_66</option>
-  </select>
-  <br>
-  <textarea name="code"></textarea>
-  <br>
+  {{ form.hidden_tag() }}
+  <table>
+    <tr>
+      <td> {{ form.language.label }} </td>
+      <td> {{ form.language }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.code.label }} </td>
+      <td> {{ form.code(rows=10, cols=50) }} </td>
+    </tr>
+  </table>
   <input type="submit" value="Submit">
 </form>

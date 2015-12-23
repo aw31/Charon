@@ -1,0 +1,18 @@
+<!doctype html>
+<title>Login</title>
+<h1>Login</h1>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+  <table>
+    <tr>
+      <td> {{ form.username.label }} </td>
+      <td> {{ form.username(size=20) }} </td>
+    </tr>
+    <tr>
+      <td> {{ form.password.label }} </td>
+      <td> {{ form.password(size=20) }} </td>
+    </tr>
+  </table>
+  <input type="submit" value="Submit">
+</form>
