@@ -1,6 +1,6 @@
 """Runs Charon and Flask server."""
 from charon import Charon
-from app import app, login_manager
+from app import app, db, login_manager
 from app.models import User
 import app.views as views
 
@@ -13,6 +13,8 @@ views.charon = Charon(
     app.config['CF_HANDLE'],
     app.config['CF_PASSWORD']
 )
+
+db.create_all()
 
 app.register_blueprint(views.views)
 app.run(debug=True)

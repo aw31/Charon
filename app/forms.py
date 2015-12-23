@@ -56,6 +56,6 @@ class RegistrationForm(Form):
             return False
         if User.query.filter_by(username=self.username.data).count():
             return False
-        if User.query.filter_by(username=self.email.data).count():
+        if User.query.filter_by(email=self.email.data).count():
             return False
         return True

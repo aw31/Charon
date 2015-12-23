@@ -110,4 +110,3 @@ def logout():
     """Handler for logging out."""
     logout_user()
     return redirect('/')
-
