@@ -3,10 +3,9 @@ import time
 from threading import Thread, Lock
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-from credentials import HANDLE, PASSWORD
 
 LOGIN_URL = 'http://codeforces.com/enter'
-SUBMISSIONS_URL = 'http://codeforces.com/submissions/' + HANDLE
+SUBMISSIONS_URL = 'http://codeforces.com/submissions/'
 
 REFRESH_LIMIT = 60
 
@@ -28,7 +27,9 @@ def run_asynchronously(f):
 
 class Charon(object):
     """Provides interface that submits solutions and retrieves results."""
-    def __init__(self):
+    def __init__(self, handle, password):
+        self.handle = handle
+        self.password = password
         self.lock = Lock() # manages access to Selenium
         self.lock.acquire() # acquires lock until logged in
         self.driver = webdriver.PhantomJS()
@@ -42,8 +43,8 @@ class Charon(object):
         password = self.driver.find_element_by_id('password')
         remember = self.driver.find_element_by_id('remember')
         submit = self.driver.find_element_by_class_name('submit')
-        handle.send_keys(HANDLE)
-        password.send_keys(PASSWORD)
+        handle.send_keys(self.handle)
+        password.send_keys(self.password)
         remember.click()
         submit.submit()
         self.driver.find_element_by_id('sidebar')
@@ -62,13 +63,13 @@ class Charon(object):
         submit.submit()
         # TODO: handle 'You have submitted exactly the same code before'
         time.sleep(1) # wait for Codeforces
-        self.driver.get(SUBMISSIONS_URL)
+        self.driver.get(SUBMISSIONS_URL + self.handle)
         last_submit = self.driver.find_elements_by_class_name('view-source')[0]
         return last_submit.get_attribute('submissionid')
 
     @synchronized
     def _status(self, submission_id):
-        self.driver.get(SUBMISSIONS_URL)
+        self.driver.get(SUBMISSIONS_URL + self.handle)
         status_xpath = '//td[@submissionid="%s"]' % submission_id
         status = self.driver.find_element_by_xpath(status_xpath)
         if status.get_attribute('waiting') == 'false':
