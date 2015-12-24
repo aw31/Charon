@@ -63,7 +63,7 @@ class Charon(object):
             checkbox.click()
         indices.select_by_value(index)
         languages.select_by_visible_text(language)
-        text_area.send_keys(code)
+        text_area.send_keys(code.replace('\t', '    '))
         submit.submit()
         # TODO: handle 'You have submitted exactly the same code before'
         time.sleep(1) # wait for Codeforces
