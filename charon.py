@@ -3,6 +3,7 @@ import time
 from threading import Thread, Lock
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+from xvfbwrapper import Xvfb
 
 LOGIN_URL = 'http://codeforces.com/enter'
 SUBMISSIONS_URL = 'http://codeforces.com/submissions/'
@@ -28,11 +29,13 @@ def run_asynchronously(f):
 class Charon(object):
     """Provides interface that submits solutions and retrieves results."""
     def __init__(self, handle, password):
+        self.vdisplay = Xvfb()
+        self.vdisplay.start()
         self.handle = handle
         self.password = password
         self.lock = Lock() # manages access to Selenium
         self.lock.acquire() # acquires lock until logged in
-        self.driver = webdriver.PhantomJS()
+        self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(10)
         self._login()
 
