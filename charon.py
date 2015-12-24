@@ -55,8 +55,12 @@ class Charon(object):
         self.driver.get(url)
         indices = Select(self.driver.find_element_by_name('submittedProblemIndex'))
         languages = Select(self.driver.find_element_by_name('programTypeId'))
+        checkbox = self.driver.find_element_by_id(
+            'edit_area_toggle_checkbox_sourceCodeTextarea')
         text_area = self.driver.find_element_by_id('sourceCodeTextarea')
         submit = self.driver.find_element_by_class_name('submit')
+        if checkbox.is_selected():
+            checkbox.click()
         indices.select_by_value(index)
         languages.select_by_visible_text(language)
         text_area.send_keys(code)

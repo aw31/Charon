@@ -17,4 +17,4 @@ views.charon = Charon(
 db.create_all()
 
 app.register_blueprint(views.views)
-app.run(debug=True)
+app.run()
