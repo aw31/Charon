@@ -101,5 +101,5 @@ class Charon(object):
             if result[0] != 'JUDGING':
                 callback(submission_id, result)
                 return
-            time.sleep(5)
+            sleep(5)
         callback(submission_id, ('ERROR', None, None))

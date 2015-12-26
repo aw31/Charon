@@ -2,7 +2,7 @@
 {% block title %}Problem {{ problem.id }} - {{ problem.title }}{% endblock %}
 {% block content %}
   <h3>Problem {{ problem.id }} - {{ problem.title }}</h3>
-  <pre>{{ problem.statement }}</pre>
+  <p id="problem" class="well">{{ problem.statement }}</p>
   <a class="btn btn-default" href="{{ problem.id }}/submit">Submit</a>
   {% if current_user.is_admin %}
     <a class="btn btn-default" href="{{ problem.id }}/edit">Edit</a>

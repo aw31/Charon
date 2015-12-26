@@ -44,3 +44,7 @@ form {
   padding-bottom: 10px;
   display: inline-block;
 }
+
+#problem {
+  white-space: pre-line;
+}

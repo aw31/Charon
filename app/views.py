@@ -46,7 +46,7 @@ def index():
 @login_required
 def status():
     """Submission status page handler."""
-    submissions = Submission.query.all()
+    submissions = reversed(Submission.query.all())
     return render_template('status.html', submissions=submissions)
 
 @views.route('/add', methods=['GET', 'POST'])
