@@ -1,5 +1,6 @@
 """Uses Selenium to login and submit solutions on Codeforces."""
-import time
+from time import sleep
+from functools import wraps
 from threading import Thread, Lock
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
@@ -12,6 +13,7 @@ REFRESH_LIMIT = 60
 
 def synchronized(f):
     """Decorator for methods that cannot execute simultaneously."""
+    @wraps(f)
     def inner(*args, **kwargs):
         args[0].lock.acquire()
         try:
@@ -22,6 +24,7 @@ def synchronized(f):
 
 def run_asynchronously(f):
     """Decorator that runs method asynchronously in new thread."""
+    @wraps(f)
     def inner(*args, **kwargs):
         Thread(target=f, args=args, kwargs=kwargs).start()
     return inner
@@ -29,12 +32,12 @@ def run_asynchronously(f):
 class Charon(object):
     """Provides interface that submits solutions and retrieves results."""
     def __init__(self, handle, password):
-        self.vdisplay = Xvfb()
-        self.vdisplay.start()
         self.handle = handle
         self.password = password
         self.lock = Lock() # manages access to Selenium
         self.lock.acquire() # acquires lock until logged in
+        self.vdisplay = Xvfb()
+        self.vdisplay.start()
         self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(10)
         self._login()
@@ -69,7 +72,7 @@ class Charon(object):
         text_area.send_keys(code.replace('\t', '    '))
         submit.submit()
         # TODO: handle 'You have submitted exactly the same code before'
-        time.sleep(1) # wait for Codeforces
+        sleep(1) # wait for Codeforces
         self.driver.get(SUBMISSIONS_URL + self.handle)
         last_submit = self.driver.find_elements_by_class_name('view-source')[0]
         return last_submit.get_attribute('submissionid')

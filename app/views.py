@@ -1,11 +1,21 @@
 """Module for Flask handlers."""
-from flask import Blueprint, abort, redirect, render_template
+from functools import wraps
+from flask import Blueprint, abort, redirect, render_template, request
 from flask.ext.login import login_required, login_user, logout_user, current_user
 from app import db
 from app.forms import ProblemForm, SubmitForm, LoginForm, RegistrationForm
 from app.models import User, Problem, Submission
 
 views = Blueprint('views', __name__)
+
+def admin_required(f):
+    """Decorator for views that require admin privileges."""
+    @wraps(f)
+    def inner(*args, **kwargs):
+        if not current_user.is_admin:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return inner
 
 def get_callback(submission_id, user_id):
     """Curries update with submission ID and user ID."""
@@ -41,6 +51,7 @@ def status():
 
 @views.route('/add', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def add():
     """Handler for adding new problems."""
     form = ProblemForm()
@@ -81,6 +92,29 @@ def submit(problem_id):
         return redirect('/status')
     return render_template('submit.html', problem=problem, form=form)
 
+@views.route('/problem/<int:problem_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit(problem_id):
+    """Handler for editing existing problems."""
+    problem = Problem.query.get(problem_id)
+    if not problem:
+        abort(404)
+    form = ProblemForm()
+    if request.method == 'GET':
+        form.url.data = problem.url
+        form.index.data = problem.index
+        form.title.data = problem.title
+        form.statement.data = problem.statement
+    if form.validate_on_submit():
+        problem.url = form.url.data
+        problem.index = form.index.data
+        problem.title = form.title.data
+        problem.statement = form.statement.data
+        db.session.commit()
+        return redirect('/')
+    return render_template('add.html', form=form)
+
 @views.route('/login', methods=['GET', 'POST'])
 def login():
     """Handler for logging in."""
@@ -102,6 +136,9 @@ def register():
             form.first_name.data,
             form.last_name.data
         )
+        # make first user an admin
+        if not User.query.count():
+            user.is_admin = True
         db.session.add(user)
         db.session.commit()
         return redirect('/')

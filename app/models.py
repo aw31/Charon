@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, nullable=False, unique=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
     solves = db.relationship('Problem', secondary=solves, backref='users', lazy='dynamic')
 
     def __init__(self, username, password, email, first_name, last_name):

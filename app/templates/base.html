@@ -12,8 +12,10 @@
       <div id="header" class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_admin %}
               <li role="presentation"><a href="/add">Add</a></li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
               <li role="presentation"><a href="/status">Status</a></li>
               <li role="presentation"><a href="/">Problems</a></li>
               <li role="presentation"><a href="/logout">Logout</a></li>
