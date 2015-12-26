@@ -48,3 +48,7 @@ form {
 #problem {
   white-space: pre-line;
 }
+
+#submitarea {
+  font-family: Consolas, monospace;
+}

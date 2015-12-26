@@ -82,15 +82,18 @@ class Charon(object):
         self.driver.get(SUBMISSIONS_URL + self.handle)
         status_xpath = '//td[@submissionid="%s"]' % submission_id
         status = self.driver.find_element_by_xpath(status_xpath)
-        if status.get_attribute('waiting') == 'false':
-            row_xpath = '//tr[@data-submission-id="%s"]' % submission_id
-            row = self.driver.find_element_by_xpath(row_xpath)
-            verdict = status.find_element_by_xpath('.//span').get_attribute('submissionverdict')
-            runtime = row.find_element_by_class_name('time-consumed-cell').text
-            memory = row.find_element_by_class_name('memory-consumed-cell').text
-            return (verdict, runtime, memory)
+        row_xpath = '//tr[@data-submission-id="%s"]' % submission_id
+        row = self.driver.find_element_by_xpath(row_xpath)
+        verdict = status.find_element_by_xpath('.//span').get_attribute('submissionverdict')
+        if verdict == 'COMPILATION_ERROR':
+            feedback = 'Compilation error'
         else:
-            return ('JUDGING', None, None)
+            feedback = status.find_element_by_xpath('.//span/span').text
+        runtime = row.find_element_by_class_name('time-consumed-cell').text
+        memory = row.find_element_by_class_name('memory-consumed-cell').text
+        if status.get_attribute('waiting') == 'true':
+            verdict = 'JUDGING'
+        return (verdict, feedback, runtime, memory)
 
     @run_asynchronously
     def submit(self, submission, callback):
@@ -98,8 +101,8 @@ class Charon(object):
         submission_id = self._submit(*submission)
         for i in range(REFRESH_LIMIT):
             result = self._status(submission_id)
+            callback(submission_id, result)
             if result[0] != 'JUDGING':
-                callback(submission_id, result)
                 return
-            sleep(5)
-        callback(submission_id, ('ERROR', None, None))
+            sleep(2)
+        callback(submission_id, ('ERROR', None, None, None))

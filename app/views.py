@@ -24,8 +24,9 @@ def get_callback(submission_id, user_id):
         submission = Submission.query.get(submission_id)
         submission.cf_id = cf_id
         submission.verdict = result[0]
-        submission.runtime = result[1]
-        submission.memory = result[2]
+        submission.feedback = result[1]
+        submission.runtime = result[2]
+        submission.memory = result[3]
         db.session.commit()
         if submission.verdict == 'OK':
             user = User.query.get(user_id)
@@ -46,8 +47,11 @@ def index():
 @login_required
 def status():
     """Submission status page handler."""
-    submissions = reversed(Submission.query.all())
-    return render_template('status.html', submissions=submissions)
+    if current_user.is_admin:
+        submissions = Submission.query.all()
+    else:
+        submissions = Submission.query.filter_by(user=current_user).all()
+    return render_template('status.html', submissions=reversed(submissions))
 
 @views.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -66,12 +70,23 @@ def add():
     return render_template('add.html', form=form)
 
 @views.route('/problem/<int:problem_id>')
-def view(problem_id):
+def view_problem(problem_id):
     """Handler for viewing problem statement."""
     problem = Problem.query.get(problem_id)
     if not problem:
         abort(404)
     return render_template('problem.html', problem=problem)
+
+@views.route('/submission/<int:submission_id>')
+@login_required
+def view_submission(submission_id):
+    """Handler for viewing submission."""
+    submission = Submission.query.get(submission_id)
+    if not submission:
+        abort(404)
+    if not current_user == submission.user and not current_user.is_admin:
+        return redirect('/login')
+    return render_template('submission.html', submission=submission)
 
 @views.route('/problem/<int:problem_id>/submit', methods=['GET', 'POST'])
 @login_required
@@ -112,7 +127,7 @@ def edit(problem_id):
         problem.title = form.title.data
         problem.statement = form.statement.data
         db.session.commit()
-        return redirect('/')
+        return redirect('/problem/%d' % problem_id)
     return render_template('add.html', form=form)
 
 @views.route('/login', methods=['GET', 'POST'])

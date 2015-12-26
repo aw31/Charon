@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Submission {{ submission.id }} - {{ submission.user.username }}{% endblock %}
+{% block content %}
+  <h3>Submission {{ submission.id }} - {{ submission.user.username }}</h3>
+  <pre class="well">{{ submission.code }}</pre>
+{% endblock %}

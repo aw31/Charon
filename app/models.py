@@ -55,6 +55,7 @@ class Submission(db.Model):
     code = db.Column(db.String)
     date = db.Column(db.DateTime)
     verdict = db.Column(db.String)
+    feedback = db.Column(db.String)
     runtime = db.Column(db.String)
     memory = db.Column(db.String)
     cf_id = db.Column(db.String)
@@ -68,5 +69,6 @@ class Submission(db.Model):
         self.code = code
         self.date = datetime.datetime.now()
         self.verdict = 'JUDGING'
+        self.feedback = 'Submitted'
         self.problem = problem
         self.user = user

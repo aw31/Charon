@@ -16,9 +16,9 @@
     </thead>
     {% for submission in submissions %}
       <tr>
-        <td> {{ submission.id }} </td>
+        <td> <a href="/submission/{{ submission.id }}">{{ submission.id }}</a> </td>
         <td> {{ submission.problem.title }} </td>
-        <td> {{ submission.verdict }} </td>
+        <td> {{ submission.feedback }} </td>
         <td> {{ submission.runtime }} </td>
         <td> {{ submission.memory }} </td>
         <td> {{ submission.user.username }} </td>
